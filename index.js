@@ -1,22 +1,32 @@
-const Peer = require('./src/peer');
+const peer = require('./src/peer');
 
-const peer = new Peer();
-
-async function test() {
+async function run() {
   await peer.ready();
+  console.log('ready!');
   try {
     await peer.loadLocalProfile();
-  } catch (e) {
+    console.log('profile loaded!');
+  } catch (error) {
     await peer.createLocalProfile({
       name: 'gustavo',
       description: 'human from earth'
     });
+    console.log('profile created!');
   } finally {
+    const hashes = [];
     await peer.subscribeMyFeed();
-    await peer.publish('olá', { keep: true });
-    await peer.publish('tudo', { keep: true, tags: ['gato', 'cachorro' ] });
-    await peer.publish('bem?');
+    console.log('subscribed to my feed!');
+    
+    const hash1 = await peer.publish('olá', { keep: true });
+    hashes.push(hash1);
+    const hash2 = await peer.publish('tudo', { keep: true, tags: ['gato', 'cachorro' ] });
+    hashes.push(hash2);
+    const hash3 = await peer.publish('bem?');
+    hashes.push(hash3);
+
+    console.log('hashes: ', hashes);
   }
+
 }
 
-test();
+run();
